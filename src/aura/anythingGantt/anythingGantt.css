@@ -1,4 +1,4 @@
-.THIS.row {
+.THIS .row, .THIS.row {
 	border-bottom: 1px whitesmoke solid;
 }
 
@@ -36,6 +36,7 @@
 .THIS .record-display {
 	position:absolute;
 	min-height: 100%;
+	border-bottom:white 1px solid
 }
 
 .THIS .cc0 {
@@ -64,10 +65,13 @@
 
 .THIS .cc5 {
 	background-color: #54698d;
+	color : white;
+
 }
 
 .THIS .cc6 {
 	background-color: #ff9a3c;
+	color : white;
 }
 
 .THIS .cc7 {

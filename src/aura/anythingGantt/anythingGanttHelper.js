@@ -47,6 +47,7 @@
 
 
     var query = "Select Id, " + startDateField + ", " + endDateField;
+
     if (component.get("v.colorCodeField")){
       //query = query + ", " + component.get("v.colorCodeField");
       extraFieldArray.push(component.get("v.colorCodeField"))
@@ -82,8 +83,10 @@
     console.log(extraFieldArray);
 
 
-    if (extraFieldArray.length>1){
+    if (extraFieldArray.length>0){
       query = query + ', ' + extraFieldArray.join();
+      console.log("with extra fields");
+      console.log(query);
     }
     //base
     query = query + " from " + component.get("v.objectName") + " where " + startDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();
@@ -179,10 +182,12 @@
       var filterArea = component.get("v.filterArea");
       var filterValues = component.get("v.filterValues") || {};
       //loop through each field and create the filter components
+      console.log("building filters");
+
       _.forEach(filterFields, function(field, key){
         //filterValues[key] = "Any";
         filterValues[field] = "Any";  
-
+        console.log("doing filter field: " + field);
         //build options
         var options = [];
         options.push({
@@ -193,6 +198,7 @@
         });
 
         _.forEach(_.uniq(_.map(recordList, field)), function(option){
+        	console.log("filter option is " + option);
           options.push({
             "class" : optionClass,
             "label" : option,
@@ -243,6 +249,9 @@
   },
 
   subArray : function(refDate, periodType, endDate, dayCount, format){
+  	if (periodType === 'NONE'){
+  		return null;
+  	}
   	console.log("subarray output");
   	console.log('refDate');
   	console.log(refDate);
@@ -294,7 +303,7 @@
       refDateMoment = moment();
     }
 
-    if (component.get("v.superPeriod") != 'NONE'){
+    if (component.get("v.superPeriod") !== 'NONE'){
       //referenceDate = refDateMoment.startOf(component.get("v.superPeriod")).toDate();
       return refDateMoment.startOf(component.get("v.superPeriod")).toDate();
 

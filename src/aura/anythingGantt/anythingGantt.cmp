@@ -67,7 +67,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 
 		<aura:if isTrue="{!and (v.colorCodeField, v.colorCodeArray.length>0)}">
 			<lightning:layoutItem >
-				<lightning:layout verticalAlign="center">
+				<lightning:layout verticalAlign="center" multipleRows="true">
 					<lightning:layoutItem class="slds-text-heading--small" padding="around-small">
 						Legend
 					</lightning:layoutItem>
