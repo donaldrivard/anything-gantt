@@ -1,0 +1,41 @@
+<design:component>
+
+	<design:attribute name="objectName" label="Object" description="The API name (including __c/__b/__x) of the object we'll be displaying as items on the gantt"/>
+
+	<design:attribute name="startDateField" label="Start Date Field" description="The API name (including __c) on the object that describes when the gantt bar ends"/>
+	<design:attribute name="endDateField" label="End Date Field" description="The API name (including __c) on the object that describes when the gantt bar ends"/>
+	
+	<design:attribute name="period" label="Period" datasource="quarter, month, week, day" default="quarter"/>
+
+	<design:attribute name="periodLabelFormat" label="Period Label Format" default="[Q]Q" description="see the moment.js documentation for format syntax.  Insert your own text with [square brackets].  For example Q3 would be [Q]Q"/>
+
+	<design:attribute name="referenceDateString" label="Reference Date" description="We'll start the left side of the gantt at the beginning of the current period/superPeriod.  If you want some other data, just put it here as MM-DD-YYYY"/>
+
+	<design:attribute name="superPeriod" label="SuperPeriod" datasource="year, quarter, month, week, NONE" default="year"/>
+
+	<design:attribute name="superPeriodLabelFormat" label="SuperPeriod Label Format" default="YYYY"/>
+
+	<design:attribute name="inputPeriodCount" label="Number of Periods to Show" default="16"/>
+	
+	<design:attribute name="colorCodeField" label="Color Code Field" description="API name of a field to drive color coding of the gantt items"/>
+
+	<design:attribute name="noParentField" label="Lowest Child Field" description="If your object is hierarchical, this is the lookup field for the hierarchy.  If you put a value here, the component will remove any records that are parents of another record."/>
+
+	<design:attribute name="relatedListField" label="Related List Field"/>
+
+	<design:attribute name="filterFields" label="Filter Fields" description="comma-separated list of API names of fields that you want to build dropdown, client-side filters from"/>	
+
+	<design:attribute name="filterFieldLabels" label="Filter Fields Labels" description="comma-separated list of labels for the filterFields"/>
+
+	<design:attribute name="innerGrouping" label="Inner Grouping Field" description="API name of the field, if selected, creates a left-side column that groups the gantt chart items.  Supports relationship fields like my_lookup__r.Name" />
+	<design:attribute name="innerGroupingLabel" label="Inner Grouping Label" />
+
+	<design:attribute name="outerGrouping" label="Outer Grouping Field" description="API name of the field, if selected, creates a left-side column that groups the gantt chart items.  Don't do an outer grouping without an inner grouping.  Supports relationship fields like my_lookup__r.Name"/>
+
+	<design:attribute name="outerGroupingLabel" label="Outer Grouping Label" />
+	<design:attribute name="singleRow" label="Single Row" description="every gantt item needs its own row...no horizontal collisions are possible"/>
+
+	
+	
+
+</design:component>

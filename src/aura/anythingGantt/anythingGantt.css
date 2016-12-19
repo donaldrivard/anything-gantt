@@ -1,0 +1,83 @@
+.THIS.row {
+	border-bottom: 1px whitesmoke solid;
+}
+
+.THIS .singleRow {
+	width:100%;
+	height:20px;
+	position:relative;
+}
+
+.THIS .header {
+	border-right: 1px whitesmoke solid;
+	padding: 5px 5px 5px 5px;
+	width : 130px;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.THIS .ganttArea, .THIS .dateBox {
+	position: relative;
+}
+
+.THIS .dateBox {
+	padding-top: 5px;
+}
+
+.THIS .dateBox div,  .THIS .superPeriod div{
+	display: inline-block;
+    text-align: center;
+}
+
+.THIS .dateBox div {
+	border-right: 1px whitesmoke solid;
+}
+
+.THIS .record-display {
+	position:absolute;
+	min-height: 100%;
+}
+
+.THIS .cc0 {
+	background-color: #1589ee;
+	color : white;
+}
+
+.THIS .cc1 {
+	background-color: #e0e5ee;
+}
+
+.THIS .cc2 {
+	background-color: #444444;
+	color : white;
+}
+
+.THIS .cc3 {
+	background-color: #04844b;
+	color : white;
+}
+
+
+.THIS .cc4 {
+	background-color: #ffb75d;
+}
+
+.THIS .cc5 {
+	background-color: #54698d;
+}
+
+.THIS .cc6 {
+	background-color: #ff9a3c;
+}
+
+.THIS .cc7 {
+	background-color: #fff03f;
+}
+
+.THIS .cc8 {
+	background-color: #faffbd;
+}
+
+.THIS .cc9 {
+	background-color: #d9ffdf;
+}
