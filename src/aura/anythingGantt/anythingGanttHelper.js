@@ -1,8 +1,9 @@
 ({
-  runAll : function(component){
-        var data = JSON.parse(component.get("v.originalData"));
-        console.log("data in RunAll is");
-        console.log(data);
+
+	runAll : function(component){
+		var data = JSON.parse(component.get("v.originalData"));
+        //console.log("data in RunAll is");
+        //console.log(data);
 
         //check filter field values
         data = this.applyFilters(component, data);
@@ -13,73 +14,75 @@
         console.log("final data structure");
         console.log(component.get("v.data"));
 
-  },
+    },
+    
 
-  applyFilters : function (component, recordList){
-    var helper = this;
-    var filters = [];
+    applyFilters : function (component, recordList){
+    	var helper = this;
+    	var filters = [];
 
-    console.log("preFilter");
-    console.log(recordList);
+    //console.log("preFilter");
+    //console.log(recordList);
     _.forEach(helper.CSL2Array(component.get("v.filterFields")), function (field){
-      var filterValue = component.get("v.filterValues")[field];
-      console.log(field + ":" + filterValue);
+    	var filterValue = component.get("v.filterValues")[field];
+      //console.log(field + ":" + filterValue);
       if (filterValue !== "Any"){
-        recordList = _.filter(recordList, [field , filterValue])
+      	recordList = _.filter(recordList, [field , filterValue])
       }      
-    });
-    console.log("postFilter");
-    console.log(recordList);
+  });
+    //console.log("postFilter");
+    //console.log(recordList);
     
 
     return recordList;
-  },
+},
 
-  buildQuery : function(component){
-    var helper = this;
-    var startDateField = component.get("v.startDateField");
-    var endDateField = component.get("v.endDateField");
+buildQuery : function(component){
 
-    var refDate = component.get("v.referenceDate")
-    console.log(refDate);
+	var helper = this;
+	var startDateField = component.get("v.startDateField");
+	var endDateField = component.get("v.endDateField");
 
-    var extraFieldArray = [];
+	var refDate = component.get("v.referenceDate")
+	console.log(refDate);
+
+	var extraFieldArray = [];
 
 
-    var query = "Select Id, " + startDateField + ", " + endDateField;
+	var query = "Select Id, " + startDateField + ", " + endDateField;
 
-    if (component.get("v.colorCodeField")){
+	if (component.get("v.colorCodeField")){
       //query = query + ", " + component.get("v.colorCodeField");
       extraFieldArray.push(component.get("v.colorCodeField"))
-    }
-    if (component.get("v.labelField")){
+  }
+  if (component.get("v.labelField")){
       //query = query + ", " + component.get("v.colorCodeField");
       extraFieldArray.push(component.get("v.labelField"))
-    }
-    if (component.get("v.noParentField")){
+  }
+  if (component.get("v.noParentField")){
       //query = query + ", " + component.get("v.noParentField");
       extraFieldArray.push(component.get("v.noParentField"))
 
-    }
-    if (component.get("v.innerGrouping")){
+  }
+  if (component.get("v.innerGrouping")){
       //query = query + ", " + component.get("v.innerGrouping");
       extraFieldArray.push(component.get("v.innerGrouping"))
 
-    }
-    if (component.get("v.outerGrouping")){
+  }
+  if (component.get("v.outerGrouping")){
       //query = query + ", " + component.get("v.outerGrouping");
       extraFieldArray.push(component.get("v.outerGrouping"))
 
-    }
-    if (component.get("v.filterFields")){
+  }
+  if (component.get("v.filterFields")){
       //query = query + ", " + component.get("v.filterFields");
       _.forEach(helper.CSL2Array(component.get("v.filterFields")), function(field){
-        extraFieldArray.push(field);
+      	extraFieldArray.push(field);
       })
-    }
-    console.log("before Dupe");
+  }
+  console.log("before Dupe");
 
-    console.log(extraFieldArray);
+  console.log(extraFieldArray);
     //dedupe just in case 
     extraFieldArray = _.uniq(extraFieldArray);
     
@@ -88,12 +91,29 @@
 
 
     if (extraFieldArray.length>0){
-      query = query + ', ' + extraFieldArray.join();
-      console.log("with extra fields");
-      console.log(query);
+    	query = query + ', ' + extraFieldArray.join();
+    	console.log("with extra fields");
+    	console.log(query);
     }
+
+    var desc = component.get("v.objectDescribe");
     //base
-    query = query + " from " + component.get("v.objectName") + " where " + startDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();
+    query = query + " from " + component.get("v.objectName") 
+    //datetime vs. date handling on startdate query
+    if ( _.find(desc.fields, {'name' : startDateField} ).type==='datetime'){
+    	query = query + " where " + startDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    } else if ( _.find(desc.fields, {'name' : startDateField} ).type==='date'){
+    	query = query + " where " + startDateField + " >= " + moment(refDate).format('YYYY-MM-DD') // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    }
+
+    if ( _.find(desc.fields, {'name' : endDateField} ).type==='datetime'){
+    	query = query + " and " + endDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    } else if ( _.find(desc.fields, {'name' : endDateField} ).type==='date'){
+    	query = query + " and " + endDateField + " >= " + moment(refDate).format('YYYY-MM-DD') // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    }
+
+    //query = query + " and " + startDateField + " < " + endDateField;
+
     //optional related list filter
     if (component.get("v.relatedListField")){
     	query = query + " and " + component.get("v.relatedListField") + " = '" + component.get("v.recordId") +  "'" ;
@@ -102,16 +122,16 @@
     query = query + " order by " + startDateField; 
     console.log(query);
     return query;
-  },
+},
 
-  buildLegend : function(component, recordList){
-    console.log("color code field: " + component.get("v.colorCodeField"));
-    var colorCodeArray = _.uniq(_.map(recordList, component.get("v.colorCodeField")));
-    console.log(colorCodeArray);
-    component.set("v.colorCodeArray", colorCodeArray);
-  },
+buildLegend : function(component, recordList){
+	console.log("color code field: " + component.get("v.colorCodeField"));
+	var colorCodeArray = _.uniq(_.map(recordList, component.get("v.colorCodeField")));
+	console.log(colorCodeArray);
+	component.set("v.colorCodeArray", colorCodeArray);
+},
 
-  organizeData : function(component, recordList) {
+organizeData : function(component, recordList) {
 
     //transform to nested array since aura:iteration can't do objects
     var result = [];  
@@ -120,22 +140,22 @@
     var colorCodeArray = component.get("v.colorCodeArray");
 
     _.forEach(recordList, function(record){
-      
-      var newRecord = record;
-      if (component.get("v.labelField")){
-      	newRecord.label = record[component.get("v.labelField")];
-      }
-      if (component.get("v.colorCodeField")){
-        newRecord.colorClass = "cc" + _.indexOf(colorCodeArray, record[component.get("v.colorCodeField")]);
-      } else {
+    	
+    	var newRecord = record;
+    	if (component.get("v.labelField")){
+    		newRecord.label = record[component.get("v.labelField")];
+    	}
+    	if (component.get("v.colorCodeField")){
+    		newRecord.colorClass = "cc" + _.indexOf(colorCodeArray, record[component.get("v.colorCodeField")]);
+    	} else {
         //default color if no color coding is requested
         newRecord.colorClass = "slds-theme--inverse";
-      }
-      newRecord.left = _.round((moment(record[component.get("v.startDateField")]).diff(moment(component.get("v.referenceDate")), 'days')/component.get("v.dayCount")*100), 3).toString();
-      newRecord.width = _.round((moment(record[component.get("v.endDateField")]).diff(moment(record[component.get("v.startDateField")]), 'days')/component.get("v.dayCount")*100), 3).toString();
-      console.log(newRecord.width);
+    }
+    newRecord.left = _.round((moment(record[component.get("v.startDateField")]).diff(moment(component.get("v.referenceDate")), 'days')/component.get("v.dayCount")*100), 3).toString();
+    newRecord.width = _.round((moment(record[component.get("v.endDateField")]).diff(moment(record[component.get("v.startDateField")]), 'days')/component.get("v.dayCount")*100), 3).toString();
+      //console.log(newRecord.width);
       records.push(newRecord);
-    });
+  });
 
     var groupedData = _.groupBy(records, component.get("v.outerGrouping"));
     
@@ -145,46 +165,46 @@
       var temp = [];  
       var innerStuff = _.groupBy(outerGroupArray, component.get("v.innerGrouping"));
       _.forEach(innerStuff, function(innerGroupArray, innerGroupingName){
-        temp.push({
-          "name" : innerGroupingName,
-          "data" : innerGroupArray          
-        });
+      	temp.push({
+      		"name" : innerGroupingName,
+      		"data" : innerGroupArray          
+      	});
       });
       //done with that outer grouping
       result.push({
-        "name" : outerGroupingName,
-        "data" : temp
+      	"name" : outerGroupingName,
+      	"data" : temp
       });
-    });
+  });
     console.log(result);
     component.set("v.data", result);
-  },
+},
 
   //Avada Kedavra, James and Lilly
   removeParents: function(component, recordList){
-    if (component.get("v.noParentField")){
+  	if (component.get("v.noParentField")){
       //list of parents
       var parentIds = _.uniq(_.map(recordList, component.get("v.noParentField")));
       return _.filter(recordList, function(record){
         //return true if the Id is not included in the parentIds array
         return !_.includes(parentIds, record.Id); 
-      });
-    } else {
-      return recordList;
-    }
-  },
+    });
+  } else {
+  	return recordList;
+  }
+},
 
-  buildFilters : function (component, recordList){
-    var filterFields = this.CSL2Array(component.get("v.filterFields"));
-    var optionClass = "";
+buildFilters : function (component, recordList){
+	var filterFields = this.CSL2Array(component.get("v.filterFields"));
+	var optionClass = "";
 
-    var labels = this.CSL2Array(component.get("v.filterFieldLabels"));
-    console.log("labels");
-    
-    console.log(labels);
+	var labels = this.CSL2Array(component.get("v.filterFieldLabels"));
+	console.log("labels");
+	
+	console.log(labels);
 
 
-    if (filterFields.length>0){
+	if (filterFields.length>4){
       //where we'll put the components
       var filterArea = component.get("v.filterArea");
       var filterValues = component.get("v.filterValues") || {};
@@ -198,118 +218,158 @@
         //build options
         var options = [];
         options.push({
-          "class" : optionClass,
-          "label" : "--Any--",
-          "value" : "Any",
-          "selected" : "true"
+        	"class" : optionClass,
+        	"label" : "--Any--",
+        	"value" : "Any",
+        	"selected" : "true"
         });
 
         _.forEach(_.uniq(_.map(recordList, field)), function(option){
         	console.log("filter option is " + option);
-          options.push({
-            "class" : optionClass,
-            "label" : option,
-            "value" : option 
-          })
+        	options.push({
+        		"class" : optionClass,
+        		"label" : option,
+        		"value" : option 
+        	})
         });
 
         console.log("label is:");
         console.log(labels[_.indexOf(filterFields, field)]);
         
         $A.createComponents(
-          [          
-            [
+        	[          
+        	[
               "ui:inputSelect", //component type
               {  //properties array
-                "aura:id" : "filter"+field,
-                "options" : options,
-                "change" : component.getReference("c.filterChange"),
-                "label" : labels[_.indexOf(filterFields, field)]
+              	"aura:id" : "filter"+field,
+              	"options" : options,
+              	"change" : component.getReference("c.filterChange"),
+              	"label" : labels[_.indexOf(filterFields, field)]
               }
-            ],
-            [
+              ],
+              [
               "lightning:layoutItem", 
               {
-                "padding" : "around-small"
+              	"padding" : "around-small"
               }
-            ]
-          ], 
-          function(components, status, errorMessage){
+              ]
+              ], 
+              function(components, status, errorMessage){
             //workaround found on GUS
             //cmp.index(component.getLocalId(), component.getGlobalId())            
 
             if (status === "SUCCESS") {
-              components[1].set("v.body", components[0]);
-              filterArea.push(components[1]);
+            	components[1].set("v.body", components[0]);
+            	filterArea.push(components[1]);
             } else if (status === "INCOMPLETE"){
-              console.log("No response from server or client is offline.")
+            	console.log("No response from server or client is offline.")
             } else if (status === "INCOMPLETE"){
-              console.log("Error: " + errorMessage);
+            	console.log("Error: " + errorMessage);
             }
-          }
+        }
         );
       }); //end the forEach loop for fields
       component.set("v.filterValues", filterValues);
       //put our new structure onto the page
       component.set("v.filterArea", filterArea);
-    }
-  },
+  }
+},
 
-  subArray : function(refDate, periodType, endDate, dayCount, format){
-  	if (periodType === 'NONE'){
-  		return null;
-  	}
-  	console.log("subarray output");
-  	console.log('refDate');
-  	console.log(refDate);
+subArray : function(refDate, periodType, endDate, dayCount, format){
+	var decimalPlaces = 4;
+
+	if (periodType === 'NONE'){
+		return null;
+	}
+  	// console.log("subarray output");
+  	// console.log('refDate');
+  	// console.log(refDate);
   	console.log('periodType');
   	console.log(periodType);
   	console.log('endDate');
   	console.log(endDate);
-  	console.log('dayCount');
-  	console.log(dayCount);
-  	console.log('format');
-  	console.log(format);
+  	// console.log('dayCount');
+  	// console.log(dayCount);
+  	// console.log('format');
+  	// console.log(format);
 
-    var momentCounter = moment(refDate);
-    var output = [];
+  	var momentCounter = moment(refDate);
+  	var output = [];
 
-    do {
+  	var stop = false;
+  	do {
+  		if (momentCounter.isAfter(moment(endDate))){
+      	stop = true; //we'll always get one extra period completed this way
+      }
+
       var thisCounter = momentCounter.toDate();
-      //console.log(thisCounter);
+      console.log("current period");
+      console.log(thisCounter);
       
-      var startPeriod = moment(thisCounter).startOf(periodType).toDate();
-      //console.log(startPeriod);
+      var startPeriod;
+      if (output.length==0){
+      	startPeriod = thisCounter;
+      } else {
+      	startPeriod = moment(thisCounter).startOf(periodType).toDate();      	
+      }
+      //version that really uses refdate
+      console.log("start of period");
+      console.log(startPeriod);
       
       var endPeriod = moment(thisCounter).endOf(periodType).toDate();
-      //console.log(endPeriod);
+      console.log("end of period");
+
+      console.log(endPeriod);
 
       var daysInPeriod = Math.min(
-        moment(endPeriod).diff(moment(startPeriod), 'days'),
-        moment(endDate).diff(moment(startPeriod), 'days') 
-      );
+      	moment(endPeriod).diff(moment(startPeriod), 'days'),
+      	moment(endDate).diff(moment(startPeriod), 'days') 
+      	);
+      if (daysInPeriod > 0){
+      	daysInPeriod++;
+      	console.log("days in period");
+      	console.log(daysInPeriod);
 
-      var width = daysInPeriod/dayCount*100;
+	      // 60/900 * 10000
+	      //var width = (Math.floor((daysInPeriod/dayCount)*Math.pow(10, decimalPlaces))/Math.pow(10, decimalPlaces))*100;
+	      var width = (daysInPeriod/dayCount)*100
+	      console.log("width: " + width);
+	      output.push({
+	      	"width": width.toFixed(5),
+	      	"label": momentCounter.format(format),
+	      	"days" : daysInPeriod
+	      });      	
+	  }
+	  momentCounter.add(1, periodType+'s');
+	  
+	} while (!stop)
 
-      output.push({
-        "width": daysInPeriod/dayCount*100,
-        "label": momentCounter.format(format)
-      });
-      momentCounter.add(1, periodType+'s');
-    } while (momentCounter.isBefore(moment(endDate)));
+
+    //check for !== 100 and scale accordingly
+    var total = _.sumBy(output, function(o){return o.width*1});
+    console.log("total : " + total);
+    
+    var delta = total - 100; //>1 is too large, <1 is too small
+    console.log("delta : " + delta);
+
+    _.forEach(output, function(value){
+    	//distribute the error based on the size of the bars
+    	value.width = value.width - delta * (value.days/dayCount);
+    })
     return output;
-  },
+},
 
-  getRefDate : function (component){
+getRefDate : function (component){
     //var referenceDate;
     var refDateMoment;
 
     if (component.get("v.referenceDateString")){ 
-      refDateMoment = moment(component.get("v.referenceDateString"), "MM-DD-YYYY");
+    	refDateMoment = moment(component.get("v.referenceDateString"), "MM-DD-YYYY");
     } else {
-      refDateMoment = moment();
+    	refDateMoment = moment();
     }
 
+    /*
     if (component.get("v.superPeriod") !== 'NONE'){
       //referenceDate = refDateMoment.startOf(component.get("v.superPeriod")).toDate();
       return refDateMoment.startOf(component.get("v.superPeriod")).toDate();
@@ -317,19 +377,20 @@
     } else {
       //referenceDate = refDateMoment.startOf(component.get("v.period")).toDate();        
       return refDateMoment.startOf(component.get("v.period")).toDate();        
-    }
-  },
+  }*/
+  return refDateMoment.startOf(component.get("v.period")).toDate();  
+},
 
-  makePeriodArray : function(component){    
+makePeriodArray : function(component){    
 
-    
-    var periodType = component.get("v.period");
-    var superPeriodType = component.get("v.superPeriod");
-    var inputPeriodCount = component.get("v.inputPeriodCount")*1-1;
+	
+	var periodType = component.get("v.period");
+	var superPeriodType = component.get("v.superPeriod");
+	var inputPeriodCount = component.get("v.inputPeriodCount")*1-1;
 
-    var referenceDate = this.getRefDate(component);
-    component.set("v.referenceDate", referenceDate);
-    
+	var referenceDate = this.getRefDate(component);
+	component.set("v.referenceDate", referenceDate);
+	
     //console.log(referenceDate);
     
     var endDate = moment(referenceDate).add(inputPeriodCount, periodType+'s').endOf(periodType).toDate();
@@ -341,26 +402,26 @@
     component.set('v.dayCount', dayCount);
 
     var periodArray = {
-      superPeriods : this.subArray(referenceDate, superPeriodType, endDate, dayCount, component.get("v.superPeriodLabelFormat")),
-      periods: this.subArray(referenceDate, periodType, endDate, dayCount, component.get("v.periodLabelFormat"))
+    	superPeriods : this.subArray(referenceDate, superPeriodType, endDate, dayCount, component.get("v.superPeriodLabelFormat")),
+    	periods: this.subArray(referenceDate, periodType, endDate, dayCount, component.get("v.periodLabelFormat"))
     };
     //periodArray.periods = this.subArray(referenceDate, periodType, endDate, dayCount, component.get("v.periodLabelFormat"));
     //periodArray.superPeriods = this.subArray(referenceDate, superPeriodType, endDate, dayCount, component.get("v.superPeriodLabelFormat"));
     
     console.log(periodArray);
     return periodArray;
-  },
+},
 
-  CSL2Array: function (CSL){        
-        try{
-            var outputArray = CSL.split(",");
-            _.forEach(outputArray, function (value, key){
-                outputArray[key] = _.trim(value);
-            });
-            return outputArray;
-        } catch(err){            
-            return [];
-        }
-    }
+CSL2Array: function (CSL){        
+	try{
+		var outputArray = CSL.split(",");
+		_.forEach(outputArray, function (value, key){
+			outputArray[key] = _.trim(value);
+		});
+		return outputArray;
+	} catch(err){            
+		return [];
+	}
+}
 
 })

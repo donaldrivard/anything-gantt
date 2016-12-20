@@ -9,14 +9,15 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 	
 	<ltng:require scripts="{!join(',', $Resource.lodash, $Resource.moment)}" afterScriptsLoaded="{!c.doInit}"/>
 
-	<aura:attribute name="inputPeriodCount" type="integer" access="global"/>
+	<aura:attribute name="inputPeriodCount" type="integer" access="global" default="10"/>
 
 	<aura:attribute name="superPeriod" type="string" default="year" access="global"/>
 	<aura:attribute name="period" type="string" default="quarter" access="global"/>
 	<aura:attribute name="superPeriodLabelFormat" type="string"  access="global" default="YYYY"/>
 	<aura:attribute name="periodLabelFormat" type="string" access="global" default="[Q]q"/>
 	<aura:attribute name="referenceDateString" type="string" access="global"/>
-	<aura:attribute name="objectName" type="string" access="global"/>
+	<aura:attribute name="objectName" type="string" access="global" default="Opportunity"/>
+	<aura:attribute name="objectDescribe" type="object"/>
 
 	<aura:attribute name="colorCodeField" type="string" access="global"/>
 	<aura:attribute name="labelField" type="string" access="global" default="Name"/>
@@ -31,11 +32,11 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 	<aura:attribute name="innerGroupingLabel" type="string" access="global"/>
 	<aura:attribute name="outerGroupingLabel" type="string" access="global"/>
 
-	<aura:attribute name="endDateField" type="string" access="global"/>
-	<aura:attribute name="startDateField" type="string" access="global"/>
+	<aura:attribute name="endDateField" type="string" access="global" default="CloseDate"/>
+	<aura:attribute name="startDateField" type="string" access="global" default="CreatedDate"/>
 
 	<aura:attribute name="noParentField" type="string" access="global"/>
-	<aura:attribute name="singleRow" type="boolean" access="global" default="false"/>
+	<aura:attribute name="singleRow" type="boolean" access="global" default="true"/>
 
 	<aura:attribute name="relatedListField" type="string" access="global" description="only get record where this field matches the current recordId"/>
 
@@ -52,7 +53,9 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 	<aura:attribute name="filterArea" type="Aura.Component[]"/>
 	<aura:attribute name="filterValues" type="object"/>
 
-
+	<!--errorHandling-->
+	<c:LightningErrorHandler />
+	<aura:registerEvent name="handleCallbackError" type="c:handleCallbackError"/>
 
 	
 	<lightning:layout verticalAlign="center" horizontalAlign="spread">
@@ -97,7 +100,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 			</aura:if>
 			<lightning:layoutItem flexibility="grow" class="superPeriod">
 				<aura:iteration items="{!v.periodObjects.superPeriods}" var="period">
-					<div style="{!'width: '+period.width+'%;'}">{!period.label}</div>
+					<div style="{!'width: '+period.width+'%;'}" class="slds-truncate">{!period.label}</div>
 				</aura:iteration>
 
 			</lightning:layoutItem>
@@ -105,14 +108,14 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 	</aura:if>
 	<lightning:layout class="row">
 		<aura:if isTrue="{!v.outerGrouping}">
-			<lightning:layoutItem flexibility="shrink" class="header">{!v.outerGroupingLabel}</lightning:layoutItem>
+			<lightning:layoutItem flexibility="shrink" class="slds-truncate header">{!v.outerGroupingLabel}</lightning:layoutItem>
 		</aura:if>
 		<aura:if isTrue="{!v.innerGrouping}">
-			<lightning:layoutItem flexibility="shrink" class="header">{!v.innerGroupingLabel}</lightning:layoutItem>
+			<lightning:layoutItem flexibility="shrink" class="slds-truncate header">{!v.innerGroupingLabel}</lightning:layoutItem>
 		</aura:if>
 		<lightning:layoutItem flexibility="grow" class="dateBox">
 			<aura:iteration items="{!v.periodObjects.periods}" var="period">
-				<div style="{!'width: '+period.width+'%;'}">{!period.label}</div>
+				<div style="{!'width: '+period.width+'%;'}" class="slds-truncate">{!period.label}</div>
 			</aura:iteration>				
 		</lightning:layoutItem>
 	</lightning:layout>
@@ -121,19 +124,19 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 	<aura:iteration items="{!v.data}" var="outer">
 		<lightning:layout class="row">
 			<aura:if isTrue="{!v.outerGrouping}"> 		
-				<lightning:layoutItem flexibility="no-shrink" class="header">{!outer.name}</lightning:layoutItem>
+				<lightning:layoutItem flexibility="no-shrink" class="slds-truncate header">{!outer.name}</lightning:layoutItem>
 			</aura:if>
 			<lightning:layoutItem flexibility="grow">
 				<aura:iteration items="{!outer.data}" var="inner">
 					<lightning:layout class="row" verticalAlign="center">
 						<aura:if isTrue="{!v.innerGrouping}">
-							<lightning:layoutItem flexibility="shrink" class="header">{!inner.name}</lightning:layoutItem>
+							<lightning:layoutItem flexibility="shrink" class="slds-truncate header">{!inner.name}</lightning:layoutItem>
 						</aura:if>
 						<lightning:layoutItem flexibility="grow" class="ganttArea">
 							<!--things can be on the same row-->
 							<aura:if isTrue="{!!v.singleRow}">
 								<aura:iteration items="{!inner.data}" var="record">
-									<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
+									<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-p-left--xx-small slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
 										{!record.label}
 										<!-- &nbsp; -->
 									</div>
@@ -144,7 +147,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 							<aura:if isTrue="{!v.singleRow}">
 								<aura:iteration items="{!inner.data}" var="record">
 									<div class="singleRow">
-										<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
+										<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-p-left--xx-small slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
 											<!-- &nbsp; -->
 											{!record.label}
 										</div>

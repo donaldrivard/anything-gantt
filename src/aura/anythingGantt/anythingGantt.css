@@ -26,8 +26,18 @@
 
 .THIS .dateBox div,  .THIS .superPeriod div{
 	display: inline-block;
-    text-align: center;
+    border-right: 1px whitesmoke solid;
 }
+
+.THIS .dateBox div {
+	text-align: center;
+}
+
+.THIS .superPeriod div {
+	text-align: left;
+	padding-left: 5px;
+}
+
 
 .THIS .dateBox div {
 	border-right: 1px whitesmoke solid;

@@ -1,20 +1,48 @@
 ({	
 //things that only happen when we first load
 	doInit : function(component, event, helper) {		
+		console.log("starting init");
 		
+		var action = component.get("c.queryJSON");
+
+		
+		var desc = component.get("c.describe");
+	  	desc.setParams({
+	  		"objtype" : component.get("v.objectName")
+	  	});
+	  	desc.setStorable();
+	  	desc.setCallback(this, function(a){
+	  		var state = a.getState();
+	  		if (state === "SUCCESS") {
+	  			console.log(JSON.parse(a.getReturnValue()));
+	  			component.set("v.objectDescribe", JSON.parse(a.getReturnValue()));
+
+	  			//can't build query until after the describe comes back.
+	  			action.setParams({
+					"soql" : helper.buildQuery(component)
+				});
+
+	  			$A.enqueueAction(action);
+	  		}  else if (state === "ERROR") {                    
+	  			console.log(a.getError());
+	  			var appEvent = $A.get("e.c:handleCallbackError");
+	  			appEvent.setParams({
+	  				"errors" : a.getError()
+	  			});
+	  			appEvent.fire();
+	  		}
+	  	});
+	  	$A.enqueueAction(desc);
+
 		//build periodArray
 		component.set("v.periodObjects", helper.makePeriodArray(component));
 
-		var action = component.get("c.queryJSON");
 
-		action.setParams({
-			"soql" : helper.buildQuery(component)
-		});
-		
+				
 		action.setCallback(this, function(a){
 			var state = a.getState();
 			if (state === "SUCCESS") {
-				console.log(a);
+				//console.log(a);
 				//component.set("v.data", a.getReturnValue());
 
 				var data = helper.removeParents(component, JSON.parse(a.getReturnValue()));
@@ -36,7 +64,7 @@
 				appEvent.fire();
 			}
 		});
-		$A.enqueueAction(action);
+		
 	},
 
 	filterChange : function (component, event, helper){
