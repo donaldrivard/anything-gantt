@@ -19,8 +19,11 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 	<aura:attribute name="objectName" type="string" access="global"/>
 
 	<aura:attribute name="colorCodeField" type="string" access="global"/>
+	<aura:attribute name="labelField" type="string" access="global" default="Name"/>
+
 	<aura:attribute name="filterFields" type="string" access="global"/>
 	<aura:attribute name="filterFieldLabels" type="string" access="global"/>
+
 
 	<aura:attribute name="innerGrouping" type="string" access="global"/>
 	<aura:attribute name="outerGrouping" type="string" access="global"/>
@@ -122,7 +125,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 			</aura:if>
 			<lightning:layoutItem flexibility="grow">
 				<aura:iteration items="{!outer.data}" var="inner">
-					<lightning:layout class="row">
+					<lightning:layout class="row" verticalAlign="center">
 						<aura:if isTrue="{!v.innerGrouping}">
 							<lightning:layoutItem flexibility="shrink" class="header">{!inner.name}</lightning:layoutItem>
 						</aura:if>
@@ -130,7 +133,10 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 							<!--things can be on the same row-->
 							<aura:if isTrue="{!!v.singleRow}">
 								<aura:iteration items="{!inner.data}" var="record">
-									<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'record-display ' + record.colorClass}" onclick="{!c.navToRecord}">&nbsp;</div>
+									<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
+										{!record.label}
+										<!-- &nbsp; -->
+									</div>
 								</aura:iteration>
 							</aura:if>
 
@@ -138,7 +144,10 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 							<aura:if isTrue="{!v.singleRow}">
 								<aura:iteration items="{!inner.data}" var="record">
 									<div class="singleRow">
-										<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'record-display ' + record.colorClass}" onclick="{!c.navToRecord}">&nbsp;</div>
+										<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
+											<!-- &nbsp; -->
+											{!record.label}
+										</div>
 
 									</div>
 								</aura:iteration>

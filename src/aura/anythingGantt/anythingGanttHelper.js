@@ -52,6 +52,10 @@
       //query = query + ", " + component.get("v.colorCodeField");
       extraFieldArray.push(component.get("v.colorCodeField"))
     }
+    if (component.get("v.labelField")){
+      //query = query + ", " + component.get("v.colorCodeField");
+      extraFieldArray.push(component.get("v.labelField"))
+    }
     if (component.get("v.noParentField")){
       //query = query + ", " + component.get("v.noParentField");
       extraFieldArray.push(component.get("v.noParentField"))
@@ -118,6 +122,9 @@
     _.forEach(recordList, function(record){
       
       var newRecord = record;
+      if (component.get("v.labelField")){
+      	newRecord.label = record[component.get("v.labelField")];
+      }
       if (component.get("v.colorCodeField")){
         newRecord.colorClass = "cc" + _.indexOf(colorCodeArray, record[component.get("v.colorCodeField")]);
       } else {

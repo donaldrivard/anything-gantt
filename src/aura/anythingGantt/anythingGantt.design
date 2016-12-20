@@ -22,6 +22,8 @@
 	<design:attribute name="noParentField" label="Lowest Child Field" description="If your object is hierarchical, this is the lookup field for the hierarchy.  If you put a value here, the component will remove any records that are parents of another record."/>
 
 	<design:attribute name="relatedListField" label="Related List Field"/>
+	<design:attribute name="labelField" label="Label Field" description="Field containing the label that you want to appear on the gantt bars.  Leave blank for no-label."/>
+
 
 	<design:attribute name="filterFields" label="Filter Fields" description="comma-separated list of API names of fields that you want to build dropdown, client-side filters from"/>	
 
