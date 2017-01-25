@@ -136,7 +136,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 							<!--things can be on the same row-->
 							<aura:if isTrue="{!!v.singleRow}">
 								<aura:iteration items="{!inner.data}" var="record">
-									<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-p-left--xx-small slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
+									<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-p-left--xx-small slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}" title="{!record.label}">
 										{!record.label}
 										<!-- &nbsp; -->
 									</div>
@@ -147,7 +147,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 							<aura:if isTrue="{!v.singleRow}">
 								<aura:iteration items="{!inner.data}" var="record">
 									<div class="singleRow">
-										<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-p-left--xx-small slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}">
+										<div id="{!record.Id}" style="{!'width: '+ record.width+ '%; left: ' + record.left + '%'}" class="{!'slds-p-left--xx-small slds-truncate record-display ' + record.colorClass}" onclick="{!c.navToRecord}" title="{!record.label}">
 											<!-- &nbsp; -->
 											{!record.label}
 										</div>

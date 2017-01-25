@@ -9,7 +9,7 @@
 
 	<design:attribute name="periodLabelFormat" label="Period Label Format" default="[Q]Q" description="see the moment.js documentation for format syntax.  Insert your own text with [square brackets].  For example Q3 would be [Q]Q"/>
 
-	<design:attribute name="referenceDateString" label="Reference Date" description="We'll start the left side of the gantt at the beginning of the current period/superPeriod.  If you want some other data, just put it here as MM-DD-YYYY"/>
+	<design:attribute name="referenceDateString" label="Reference Date" description="We'll start the left side of the gantt at the beginning of the current period/superPeriod.  If you want some other data, just put it here as MM-DD-YYYY.  Only records with the startDateField within this window will show (nothing starting before this date will be on the board)."/>
 
 	<design:attribute name="superPeriod" label="SuperPeriod" datasource="year, quarter, month, week, NONE" default="year"/>
 
@@ -21,7 +21,8 @@
 
 	<design:attribute name="noParentField" label="Lowest Child Field" description="If your object is hierarchical, this is the lookup field for the hierarchy.  If you put a value here, the component will remove any records that are parents of another record."/>
 
-	<design:attribute name="relatedListField" label="Related List Field"/>
+	<design:attribute name="relatedListField" label="Related List Field" description="If you're using this as a related list, put the lookup name in here.  The component will read the recordId and then only show records where that lookup value is equal to the current record Id.  For example, enter 'Account' and drop it on the Account Record Detail page to show opportunities related to that account."/>
+
 	<design:attribute name="labelField" label="Label Field" description="Field containing the label that you want to appear on the gantt bars.  Leave blank for no-label."/>
 
 
@@ -35,7 +36,8 @@
 	<design:attribute name="outerGrouping" label="Outer Grouping Field" description="API name of the field, if selected, creates a left-side column that groups the gantt chart items.  Don't do an outer grouping without an inner grouping.  Supports relationship fields like my_lookup__r.Name"/>
 
 	<design:attribute name="outerGroupingLabel" label="Outer Grouping Label" />
-	<design:attribute name="singleRow" label="Single Row" description="every gantt item needs its own row...no horizontal collisions are possible"/>
+	
+	<design:attribute name="singleRow" label="Single Row" description="every gantt item needs its own row...no horizontal collisions are possible.  Uncheck this only if your data doesn't allow rows to overlap date ranges (for example, sequential tasks in a project plan) within the lowest grouping"/>
 
 	
 	

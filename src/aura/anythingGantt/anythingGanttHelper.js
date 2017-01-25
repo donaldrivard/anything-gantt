@@ -152,9 +152,22 @@ organizeData : function(component, recordList) {
         newRecord.colorClass = "slds-theme--inverse";
     }
     newRecord.left = _.round((moment(record[component.get("v.startDateField")]).diff(moment(component.get("v.referenceDate")), 'days')/component.get("v.dayCount")*100), 3).toString();
-    newRecord.width = _.round((moment(record[component.get("v.endDateField")]).diff(moment(record[component.get("v.startDateField")]), 'days')/component.get("v.dayCount")*100), 3).toString();
-      //console.log(newRecord.width);
-      records.push(newRecord);
+    
+    var endMoment;; //default to now, will override if a date exists on the record
+
+    if(record[component.get("v.endDateField")]){
+      //bar length shouldn't exceed the top-level timeframe (refdate through periodCount)
+      endMoment = moment.min(
+        moment(record[component.get("v.endDateField")]), //end of the record's time
+        moment(component.get("v.referenceDate")).add(component.get("v.dayCount"), 'days')
+      ); 
+    } else {
+      endMoment = moment(); //if there is no date value in the field, we'll use now instead so we can show something
+    }
+    
+    newRecord.width = _.round(endMoment.diff(moment(record[component.get("v.startDateField")]), 'days')  /  component.get("v.dayCount")*100 , 3).toString(); 
+    //console.log(newRecord.width);
+    records.push(newRecord);
   });
 
     var groupedData = _.groupBy(records, component.get("v.outerGrouping"));
@@ -195,6 +208,8 @@ organizeData : function(component, recordList) {
 },
 
 buildFilters : function (component, recordList){
+  console.log("starting Filter Build");
+
 	var filterFields = this.CSL2Array(component.get("v.filterFields"));
 	var optionClass = "";
 
@@ -204,7 +219,7 @@ buildFilters : function (component, recordList){
 	console.log(labels);
 
 
-	if (filterFields.length>4){
+	if (filterFields.length>0){
       //where we'll put the components
       var filterArea = component.get("v.filterArea");
       var filterValues = component.get("v.filterValues") || {};
@@ -272,6 +287,8 @@ buildFilters : function (component, recordList){
       component.set("v.filterValues", filterValues);
       //put our new structure onto the page
       component.set("v.filterArea", filterArea);
+      console.log("done with Filter Build");
+
   }
 },
 
@@ -394,6 +411,7 @@ makePeriodArray : function(component){
     //console.log(referenceDate);
     
     var endDate = moment(referenceDate).add(inputPeriodCount, periodType+'s').endOf(periodType).toDate();
+    //console.log("original enddate");
     //console.log(endDate);
     
     var dayCount = moment(endDate).diff(moment(referenceDate), 'days');
