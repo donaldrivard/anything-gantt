@@ -8,10 +8,21 @@
 	position:relative;
 }
 
+.THIS .allRows {
+	position: relative;
+}
+
+.THIS .todayLine{
+	position:absolute;
+	border-left:3px solid yellow;
+	height:100%;
+	z-index: 1;
+}
+
 .THIS .header {
 	border-right: 1px whitesmoke solid;
 	padding: 5px 5px 5px 5px;
-	width : 130px;
+	width : 7%;
 	text-align: center;
 	white-space: nowrap;
 }

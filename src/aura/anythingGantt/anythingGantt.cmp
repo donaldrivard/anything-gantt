@@ -37,6 +37,8 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 
 	<aura:attribute name="noParentField" type="string" access="global"/>
 	<aura:attribute name="singleRow" type="boolean" access="global" default="true"/>
+	<aura:attribute name="showTodayLine" type="boolean" access="global" default="true"/>
+
 
 	<aura:attribute name="relatedListField" type="string" access="global" description="only get record where this field matches the current recordId"/>
 
@@ -44,6 +46,8 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 
 	<!-- internal variables -->
 	<aura:attribute name="dayCount" type="integer"/>
+	<aura:attribute name="todayLineLeft" type="string"/>
+
 	<aura:attribute name="periodObjects" type="object"/>
 	<aura:attribute name="originalData" type="string"/>
 
@@ -52,6 +56,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 
 	<aura:attribute name="filterArea" type="Aura.Component[]"/>
 	<aura:attribute name="filterValues" type="object"/>
+	<aura:attribute name="data" type="object[]"/>
 
 	<!--errorHandling-->
 	<c:LightningErrorHandler />
@@ -89,14 +94,13 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 		</aura:if>
 	</lightning:layout>
 
-	<aura:attribute name="data" type="object[]"/>
 	<aura:if isTrue="{!v.superPeriod != 'NONE'}">
 		<lightning:layout class="slds-m-top--small row">
 			<aura:if isTrue="{!v.outerGrouping}">
-				<lightning:layoutItem flexibility="shrink" class="header"/>
+				<lightning:layoutItem  class="header"/>
 			</aura:if>
 			<aura:if isTrue="{!v.innerGrouping}">
-				<lightning:layoutItem flexibility="shrink" class="header"/>
+				<lightning:layoutItem  class="header"/>
 			</aura:if>
 			<lightning:layoutItem flexibility="grow" class="superPeriod">
 				<aura:iteration items="{!v.periodObjects.superPeriods}" var="period">
@@ -106,12 +110,13 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 			</lightning:layoutItem>
 		</lightning:layout>
 	</aura:if>
+
 	<lightning:layout class="row">
 		<aura:if isTrue="{!v.outerGrouping}">
-			<lightning:layoutItem flexibility="shrink" class="slds-truncate header">{!v.outerGroupingLabel}</lightning:layoutItem>
+			<lightning:layoutItem  class="slds-truncate header">{!v.outerGroupingLabel}</lightning:layoutItem>
 		</aura:if>
 		<aura:if isTrue="{!v.innerGrouping}">
-			<lightning:layoutItem flexibility="shrink" class="slds-truncate header">{!v.innerGroupingLabel}</lightning:layoutItem>
+			<lightning:layoutItem  class="slds-truncate header">{!v.innerGroupingLabel}</lightning:layoutItem>
 		</aura:if>
 		<lightning:layoutItem flexibility="grow" class="dateBox">
 			<aura:iteration items="{!v.periodObjects.periods}" var="period">
@@ -122,7 +127,10 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 
 
 	<aura:iteration items="{!v.data}" var="outer">
-		<lightning:layout class="row">
+		<lightning:layout class="row allRows">
+			<aura:if isTrue = "{!v.showTodayLine}">
+				<div class="todayLine" style="{!'left:' + v.todayLineLeft + '%'}"/>
+			</aura:if>
 			<aura:if isTrue="{!v.outerGrouping}"> 		
 				<lightning:layoutItem flexibility="no-shrink" class="slds-truncate header">{!outer.name}</lightning:layoutItem>
 			</aura:if>
@@ -130,7 +138,7 @@ dynamic query from filter fields, color code field, date fields, sobject name, e
 				<aura:iteration items="{!outer.data}" var="inner">
 					<lightning:layout class="row" verticalAlign="center">
 						<aura:if isTrue="{!v.innerGrouping}">
-							<lightning:layoutItem flexibility="shrink" class="slds-truncate header">{!inner.name}</lightning:layoutItem>
+							<lightning:layoutItem  class="slds-truncate header">{!inner.name}</lightning:layoutItem>
 						</aura:if>
 						<lightning:layoutItem flexibility="grow" class="ganttArea">
 							<!--things can be on the same row-->

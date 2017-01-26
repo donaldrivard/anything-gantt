@@ -39,6 +39,8 @@
 	
 	<design:attribute name="singleRow" label="Single Row" description="every gantt item needs its own row...no horizontal collisions are possible.  Uncheck this only if your data doesn't allow rows to overlap date ranges (for example, sequential tasks in a project plan) within the lowest grouping"/>
 
+	<design:attribute name="showTodayLine" label="Today Line" description="puts a vertical yellow line to mark where today is on the chart"/>
+
 	
 	
 

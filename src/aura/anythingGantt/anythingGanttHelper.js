@@ -386,6 +386,7 @@ getRefDate : function (component){
     	refDateMoment = moment();
     }
 
+
     /*
     if (component.get("v.superPeriod") !== 'NONE'){
       //referenceDate = refDateMoment.startOf(component.get("v.superPeriod")).toDate();
@@ -396,6 +397,30 @@ getRefDate : function (component){
       return refDateMoment.startOf(component.get("v.period")).toDate();        
   }*/
   return refDateMoment.startOf(component.get("v.period")).toDate();  
+},
+
+makeTodayLine : function (component){
+  var headerAdder;
+
+  if (component.get("v.outerGrouping") && component.get("v.innerGrouping")){
+    headerAdder = 14;
+  } else if (component.get("v.outerGrouping") || component.get("v.innerGrouping")){
+    headerAdder = 7;
+  } else {
+    headerAdder = 0
+  }
+
+  var dayCount = component.get("v.dayCount");
+
+  //virtual to adjust for the size of the left headers on each row
+  var virtualDayCount = dayCount / (1 - (headerAdder/100));
+
+  var todayLeft = _.round(
+    moment().diff(moment(component.get("v.referenceDate")), 'days') / virtualDayCount *100
+  , 2) + headerAdder;
+  
+  return todayLeft.toString();
+
 },
 
 makePeriodArray : function(component){    
@@ -415,9 +440,12 @@ makePeriodArray : function(component){
     //console.log(endDate);
     
     var dayCount = moment(endDate).diff(moment(referenceDate), 'days');
+    
+    
 
     //console.log(dayCount);
     component.set('v.dayCount', dayCount);
+    component.set("v.todayLineLeft", this.makeTodayLine(component));
 
     var periodArray = {
     	superPeriods : this.subArray(referenceDate, superPeriodType, endDate, dayCount, component.get("v.superPeriodLabelFormat")),
