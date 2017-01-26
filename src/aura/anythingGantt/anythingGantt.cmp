@@ -5,7 +5,7 @@ relatedTo field (for relatedList as Gantt)
 dynamic query from filter fields, color code field, date fields, sobject name, etc.
 -->
 
-<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="Ora">
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes, forceCommunity:availableForAllPageTypes" controller="Ora">
 	
 	<ltng:require scripts="{!join(',', $Resource.lodash, $Resource.moment)}" afterScriptsLoaded="{!c.doInit}"/>
 
