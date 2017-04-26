@@ -7,15 +7,15 @@
 
         //check filter field values
         data = this.applyFilters(component, data);
-        
 
-        this.organizeData(component, data);        
-        
+
+        this.organizeData(component, data);
+
         console.log("final data structure");
         console.log(component.get("v.data"));
 
     },
-    
+
 
     applyFilters : function (component, recordList){
     	var helper = this;
@@ -24,15 +24,16 @@
     //console.log("preFilter");
     //console.log(recordList);
     _.forEach(helper.CSL2Array(component.get("v.filterFields")), function (field){
+
     	var filterValue = component.get("v.filterValues")[field];
       //console.log(field + ":" + filterValue);
       if (filterValue !== "Any"){
       	recordList = _.filter(recordList, [field , filterValue])
-      }      
+      }
   });
     //console.log("postFilter");
     //console.log(recordList);
-    
+
 
     return recordList;
 },
@@ -83,9 +84,9 @@ buildQuery : function(component){
   console.log("before Dupe");
 
   console.log(extraFieldArray);
-    //dedupe just in case 
+    //dedupe just in case
     extraFieldArray = _.uniq(extraFieldArray);
-    
+
     console.log("after Dupe");
     console.log(extraFieldArray);
 
@@ -98,18 +99,18 @@ buildQuery : function(component){
 
     var desc = component.get("v.objectDescribe");
     //base
-    query = query + " from " + component.get("v.objectName") 
+    query = query + " from " + component.get("v.objectName")
     //datetime vs. date handling on startdate query
     if ( _.find(desc.fields, {'name' : startDateField} ).type==='datetime'){
-    	query = query + " where " + startDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    	query = query + " where " + startDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();
     } else if ( _.find(desc.fields, {'name' : startDateField} ).type==='date'){
-    	query = query + " where " + startDateField + " >= " + moment(refDate).format('YYYY-MM-DD') // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    	query = query + " where " + startDateField + " >= " + moment(refDate).format('YYYY-MM-DD') // + " and " + endDateField + " >= " + moment(refDate).toISOString();
     }
 
     if ( _.find(desc.fields, {'name' : endDateField} ).type==='datetime'){
-    	query = query + " and " + endDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    	query = query + " and " + endDateField + " >= " + moment(refDate).toISOString() // + " and " + endDateField + " >= " + moment(refDate).toISOString();
     } else if ( _.find(desc.fields, {'name' : endDateField} ).type==='date'){
-    	query = query + " and " + endDateField + " >= " + moment(refDate).format('YYYY-MM-DD') // + " and " + endDateField + " >= " + moment(refDate).toISOString();    	
+    	query = query + " and " + endDateField + " >= " + moment(refDate).format('YYYY-MM-DD') // + " and " + endDateField + " >= " + moment(refDate).toISOString();
     }
 
     //query = query + " and " + startDateField + " < " + endDateField;
@@ -119,7 +120,7 @@ buildQuery : function(component){
     	query = query + " and " + component.get("v.relatedListField") + " = '" + component.get("v.recordId") +  "'" ;
     }
     //order by
-    query = query + " order by " + startDateField; 
+    query = query + " order by " + startDateField;
     console.log(query);
     return query;
 },
@@ -134,13 +135,13 @@ buildLegend : function(component, recordList){
 organizeData : function(component, recordList) {
 
     //transform to nested array since aura:iteration can't do objects
-    var result = [];  
+    var result = [];
     var records = [];
 
     var colorCodeArray = component.get("v.colorCodeArray");
 
     _.forEach(recordList, function(record){
-    	
+
     	var newRecord = record;
     	if (component.get("v.labelField")){
     		newRecord.label = record[component.get("v.labelField")];
@@ -152,7 +153,7 @@ organizeData : function(component, recordList) {
         newRecord.colorClass = "slds-theme--inverse";
     }
     newRecord.left = _.round((moment(record[component.get("v.startDateField")]).diff(moment(component.get("v.referenceDate")), 'days')/component.get("v.dayCount")*100), 3).toString();
-    
+
     var endMoment;; //default to now, will override if a date exists on the record
 
     if(record[component.get("v.endDateField")]){
@@ -160,27 +161,27 @@ organizeData : function(component, recordList) {
       endMoment = moment.min(
         moment(record[component.get("v.endDateField")]), //end of the record's time
         moment(component.get("v.referenceDate")).add(component.get("v.dayCount"), 'days')
-      ); 
+      );
     } else {
       endMoment = moment(); //if there is no date value in the field, we'll use now instead so we can show something
     }
-    
-    newRecord.width = _.round(endMoment.diff(moment(record[component.get("v.startDateField")]), 'days')  /  component.get("v.dayCount")*100 , 3).toString(); 
+
+    newRecord.width = _.round(endMoment.diff(moment(record[component.get("v.startDateField")]), 'days')  /  component.get("v.dayCount")*100 , 3).toString();
     //console.log(newRecord.width);
     records.push(newRecord);
   });
 
     var groupedData = _.groupBy(records, component.get("v.outerGrouping"));
-    
+
     //iterate the outer groupings (ex: facility)
-    _.forEach(groupedData, function (outerGroupArray, outerGroupingName){ 
+    _.forEach(groupedData, function (outerGroupArray, outerGroupingName){
       //this is a group of records under that facility
-      var temp = [];  
+      var temp = [];
       var innerStuff = _.groupBy(outerGroupArray, component.get("v.innerGrouping"));
       _.forEach(innerStuff, function(innerGroupArray, innerGroupingName){
       	temp.push({
       		"name" : innerGroupingName,
-      		"data" : innerGroupArray          
+      		"data" : innerGroupArray
       	});
       });
       //done with that outer grouping
@@ -200,7 +201,7 @@ organizeData : function(component, recordList) {
       var parentIds = _.uniq(_.map(recordList, component.get("v.noParentField")));
       return _.filter(recordList, function(record){
         //return true if the Id is not included in the parentIds array
-        return !_.includes(parentIds, record.Id); 
+        return !_.includes(parentIds, record.Id);
     });
   } else {
   	return recordList;
@@ -215,7 +216,7 @@ buildFilters : function (component, recordList){
 
 	var labels = this.CSL2Array(component.get("v.filterFieldLabels"));
 	console.log("labels");
-	
+
 	console.log(labels);
 
 
@@ -228,7 +229,7 @@ buildFilters : function (component, recordList){
 
       _.forEach(filterFields, function(field, key){
         //filterValues[key] = "Any";
-        filterValues[field] = "Any";  
+        filterValues[field] = "Any";
         console.log("doing filter field: " + field);
         //build options
         var options = [];
@@ -244,15 +245,15 @@ buildFilters : function (component, recordList){
         	options.push({
         		"class" : optionClass,
         		"label" : option,
-        		"value" : option 
+        		"value" : option
         	})
         });
 
         console.log("label is:");
         console.log(labels[_.indexOf(filterFields, field)]);
-        
+
         $A.createComponents(
-        	[          
+        	[
         	[
               "ui:inputSelect", //component type
               {  //properties array
@@ -263,15 +264,15 @@ buildFilters : function (component, recordList){
               }
               ],
               [
-              "lightning:layoutItem", 
+              "lightning:layoutItem",
               {
               	"padding" : "around-small"
               }
               ]
-              ], 
+              ],
               function(components, status, errorMessage){
             //workaround found on GUS
-            //cmp.index(component.getLocalId(), component.getGlobalId())            
+            //cmp.index(component.getLocalId(), component.getGlobalId())
 
             if (status === "SUCCESS") {
             	components[1].set("v.body", components[0]);
@@ -322,17 +323,17 @@ subArray : function(refDate, periodType, endDate, dayCount, format){
       var thisCounter = momentCounter.toDate();
       console.log("current period");
       console.log(thisCounter);
-      
+
       var startPeriod;
       if (output.length==0){
       	startPeriod = thisCounter;
       } else {
-      	startPeriod = moment(thisCounter).startOf(periodType).toDate();      	
+      	startPeriod = moment(thisCounter).startOf(periodType).toDate();
       }
       //version that really uses refdate
       console.log("start of period");
       console.log(startPeriod);
-      
+
       var endPeriod = moment(thisCounter).endOf(periodType).toDate();
       console.log("end of period");
 
@@ -340,7 +341,7 @@ subArray : function(refDate, periodType, endDate, dayCount, format){
 
       var daysInPeriod = Math.min(
       	moment(endPeriod).diff(moment(startPeriod), 'days'),
-      	moment(endDate).diff(moment(startPeriod), 'days') 
+      	moment(endDate).diff(moment(startPeriod), 'days')
       	);
       if (daysInPeriod > 0){
       	daysInPeriod++;
@@ -355,17 +356,25 @@ subArray : function(refDate, periodType, endDate, dayCount, format){
 	      	"width": width.toFixed(5),
 	      	"label": momentCounter.format(format),
 	      	"days" : daysInPeriod
-	      });      	
-	  }
+	      });
+      } else if (periodType === 'day') {
+        console.log("doing day version");
+        var width = 1/dayCount*100;
+        output.push({
+          "width": width.toFixed(5),
+          "label": momentCounter.format(format),
+          "days" : 1
+        });
+      }
 	  momentCounter.add(1, periodType+'s');
-	  
+
 	} while (!stop)
 
 
     //check for !== 100 and scale accordingly
     var total = _.sumBy(output, function(o){return o.width*1});
     console.log("total : " + total);
-    
+
     var delta = total - 100; //>1 is too large, <1 is too small
     console.log("delta : " + delta);
 
@@ -380,7 +389,7 @@ getRefDate : function (component){
     //var referenceDate;
     var refDateMoment;
 
-    if (component.get("v.referenceDateString")){ 
+    if (component.get("v.referenceDateString")){
     	refDateMoment = moment(component.get("v.referenceDateString"), "MM-DD-YYYY");
     } else {
     	refDateMoment = moment();
@@ -393,10 +402,10 @@ getRefDate : function (component){
       return refDateMoment.startOf(component.get("v.superPeriod")).toDate();
 
     } else {
-      //referenceDate = refDateMoment.startOf(component.get("v.period")).toDate();        
-      return refDateMoment.startOf(component.get("v.period")).toDate();        
+      //referenceDate = refDateMoment.startOf(component.get("v.period")).toDate();
+      return refDateMoment.startOf(component.get("v.period")).toDate();
   }*/
-  return refDateMoment.startOf(component.get("v.period")).toDate();  
+  return refDateMoment.startOf(component.get("v.period")).toDate();
 },
 
 makeTodayLine : function (component){
@@ -418,30 +427,30 @@ makeTodayLine : function (component){
   var todayLeft = _.round(
     moment().diff(moment(component.get("v.referenceDate")), 'days') / virtualDayCount *100
   , 2) + headerAdder;
-  
+
   return todayLeft.toString();
 
 },
 
-makePeriodArray : function(component){    
+makePeriodArray : function(component){
 
-	
+
 	var periodType = component.get("v.period");
 	var superPeriodType = component.get("v.superPeriod");
 	var inputPeriodCount = component.get("v.inputPeriodCount")*1-1;
 
 	var referenceDate = this.getRefDate(component);
 	component.set("v.referenceDate", referenceDate);
-	
+
     //console.log(referenceDate);
-    
+
     var endDate = moment(referenceDate).add(inputPeriodCount, periodType+'s').endOf(periodType).toDate();
     //console.log("original enddate");
     //console.log(endDate);
-    
+
     var dayCount = moment(endDate).diff(moment(referenceDate), 'days');
-    
-    
+
+
 
     //console.log(dayCount);
     component.set('v.dayCount', dayCount);
@@ -453,19 +462,19 @@ makePeriodArray : function(component){
     };
     //periodArray.periods = this.subArray(referenceDate, periodType, endDate, dayCount, component.get("v.periodLabelFormat"));
     //periodArray.superPeriods = this.subArray(referenceDate, superPeriodType, endDate, dayCount, component.get("v.superPeriodLabelFormat"));
-    
+
     console.log(periodArray);
     return periodArray;
 },
 
-CSL2Array: function (CSL){        
+CSL2Array: function (CSL){
 	try{
 		var outputArray = CSL.split(",");
 		_.forEach(outputArray, function (value, key){
 			outputArray[key] = _.trim(value);
 		});
 		return outputArray;
-	} catch(err){            
+	} catch(err){
 		return [];
 	}
 }
