@@ -10,3 +10,8 @@ Easiest way to get started is to create an app page in App Builder and check out
 Can be used as either a standalone app page, or on the record detail page, optionally scoped to children of that record.
 
 This is completely unsupported by Salesforce even though I work there.  Shared with the community because sharing is good.
+
+<a href="https://githubsfdeploy.herokuapp.com?owner=mshanemc&repo=anythingGantt">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png"/>
+</a>
