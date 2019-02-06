@@ -1,0 +1,22 @@
+{
+  "name": "anythinggantt",
+  "version": "1.0.0",
+  "description": "## Dev, Build and Test",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test:unit": "lwc-jest",
+    "test:unit:watch": "lwc-jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mshanemc/anythingGantt.git"
+  },
+  "author": "Shane McLaughlin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mshanemc/anythingGantt/issues"
+  },
+  "homepage": "https://github.com/mshanemc/anythingGantt#readme"
+}
