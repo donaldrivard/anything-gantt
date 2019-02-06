@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
+    "@salesforce/lwc-jest": "^0.4.7",
     "eslint": "^5.13.0"
   },
   "scripts": {
