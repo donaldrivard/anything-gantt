@@ -4,7 +4,9 @@
   "description": "## Dev, Build and Test",
   "main": "index.js",
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^5.13.0"
+  },
   "scripts": {
     "test:unit": "lwc-jest",
     "test:unit:watch": "lwc-jest --watch"

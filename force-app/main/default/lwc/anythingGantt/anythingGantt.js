@@ -12,7 +12,7 @@ export default class AnythingGantt extends LightningElement {
     @api endDateField;
     @api period; // day, week, month, quarter, year
     @api periodLabelFormat;
-    @api referenceDate = new Date();
+    @api referenceDateString;
     @api superPeriod;
     @api superPeriodLabelFormat;
     @api inputPeriodCount;
@@ -32,7 +32,6 @@ export default class AnythingGantt extends LightningElement {
     // query the records for object name, and any included fields
 
     // create the data for the chart
-    maxDate = new Date();
     groupingColumnWidth = '20px;';
     @track header = {
         periods: [],
@@ -67,6 +66,8 @@ export default class AnythingGantt extends LightningElement {
 
     // TODO: use real data
     connectedCallback() {
+        this.referenceDate = new Date(this.referenceDateString);
+
         this.rawData = fakeData.result.records;     
         
         ({ startOfChart: this.startOfChart, endOfChart: this.endOfChart, chartDays: this.chartDays} = getChartBoundaries(this.rawData, this.period, this.superPeriod, this.referenceDate, this.endDateField));
