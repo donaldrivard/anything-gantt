@@ -1,4 +1,4 @@
-import moment from './moment.js';
+import moment from 'c/momentJS';
 
 const getMaxDate = (queriedData, endDateField) => {
     return moment.max(

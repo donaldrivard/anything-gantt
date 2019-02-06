@@ -1,6 +1,6 @@
 import {getMaxDate, getChartBoundaries, createPeriods} from '../calc';
 import * as fakeData from '../__tests__/data/fakeData.json';
-import moment from '../moment';
+import moment from 'c/momentJS';
 
 
 const refDate = new Date('2019-01-16T04:04:00');

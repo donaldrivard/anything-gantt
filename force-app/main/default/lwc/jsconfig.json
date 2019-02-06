@@ -5,6 +5,9 @@
         "paths": {
             "c/anything-gantt": [
                 "anythingGantt/anythingGantt.js"
+            ],
+            "c/moment-js": [
+                "momentJS/momentJS.js"
             ]
         }
     },

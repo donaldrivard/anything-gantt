@@ -1,6 +1,5 @@
 import { LightningElement, api, track } from 'lwc';
 import { getChartBoundaries, createPeriods } from './calc';
-// import * as moment from 'anythingGantt/moment';
 
 import { fakeData } from './fakeData';
 
